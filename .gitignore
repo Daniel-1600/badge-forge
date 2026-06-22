@@ -1,0 +1,13 @@
+# compiled binary (produced when you run "go build")
+tahrir-go
+
+# environment variables / secrets
+.env
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# editor folders
+.vscode/
+.idea/
