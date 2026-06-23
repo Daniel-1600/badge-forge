@@ -15,6 +15,10 @@ type Person struct {
 	Avatar    string
 }
 
+func (p *Person) TableName() string {
+	return "persons"
+}
+
 type Badge struct {
 	ID          string `gorm:"primaryKey"`
 	Name        string `gorm:"not null"`
