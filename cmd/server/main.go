@@ -7,6 +7,12 @@ import (
 	"tahrir-go/internal/handlers"
 )
 
+// @title           Tahrir API
+// @version         1.0
+// @description     Badge assertion API
+// @host            localhost:8080
+// @BasePath        /
+
 func main() {
 
 	dsn := "host=localhost user=tahrir password=tahrir dbname=tahrir port=5432 sslmode=disable"

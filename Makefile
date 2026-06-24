@@ -1,4 +1,4 @@
-.phony: lint format server build db-start check
+.phony: lint format server build db-start check deps
 
 #check all go files for linting issues
 lint:

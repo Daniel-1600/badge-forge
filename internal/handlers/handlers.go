@@ -7,6 +7,7 @@ import (
 	"tahrir-go/internal/models"
 )
 
+//GetPersons fetches a list of persons from the database
 func GetPersons(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var persons []models.Person
@@ -24,6 +25,7 @@ func GetPersons(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+//GetPersonByNickname fetches a person by nickname from the database
 func GetPersonByNickname(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		nickname := r.PathValue("nickname")
@@ -47,6 +49,7 @@ func GetPersonByNickname(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+//GetPersonByID fetches a person by ID from the database
 func GetPersonByID(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
@@ -70,6 +73,7 @@ func GetPersonByID(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+//GetBadges fetches a list of badges from the database
 func GetBadges(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var badges []models.Badge
@@ -87,6 +91,7 @@ func GetBadges(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+//GetBadgeByID fetches a badge by ID from the database
 func GetBadgeByID(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
@@ -110,6 +115,7 @@ func GetBadgeByID(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+//CreateBadge creates a new badge in the database
 func CreateBadge(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var badge models.Badge
@@ -133,6 +139,7 @@ func CreateBadge(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+//GetAssertionsByID fetches assertions by ID from the database
 func GetAssertionsByID(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
@@ -156,6 +163,7 @@ func GetAssertionsByID(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+//GetAssertionsByPersonNickname fetches assertions by person nickname from the database
 func GetAssertionsByPersonNickname(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// first find the person by nickname
@@ -182,6 +190,7 @@ func GetAssertionsByPersonNickname(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+//CreateAssertion creates a new assertion in the database
 func PostAssertion(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var assertion models.Assertion
