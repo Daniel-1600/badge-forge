@@ -97,10 +97,6 @@ func GetBadgeByID(db *gorm.DB) http.HandlerFunc {
 
 		var badge models.Badge
 		result := db.First(&badge, "id = ?", id)
-		// if result.Error != nil {
-		// 	http.Error(w, "Failed to fetch badge", http.StatusInternalServerError)
-		// 	return
-		// }
 		if result.RowsAffected == 0 {
 			http.Error(w, "Badge not found", http.StatusNotFound)
 			return
@@ -131,6 +127,78 @@ func CreateBadge(db *gorm.DB) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		if err := json.NewEncoder(w).Encode(badge); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func GetAssertionsByID(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		if id == "" {
+			http.Error(w, "ID is required", http.StatusBadRequest)
+			return
+		}
+
+		var assertions []models.Assertion
+		result := db.Limit(5).Find(&assertions, "id = ?", id)
+		if result.Error != nil {
+			http.Error(w, "Failed to fetch assertions", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(assertions); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func GetAssertionsByPersonNickname(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// first find the person by nickname
+		nickname := r.PathValue("person_nickname")
+		var person models.Person
+		if err := db.Where("nickname = ?", nickname).First(&person).Error; err != nil {
+			http.Error(w, "Person not found", http.StatusNotFound)
+			return
+		}
+
+		// then fetch their assertions
+		var assertions []models.Assertion
+		result := db.Preload("Badge").Where("person_id = ?", person.ID).Find(&assertions)
+		if result.Error != nil {
+			http.Error(w, "Failed to fetch assertions", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(assertions); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func PostAssertion(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var assertion models.Assertion
+		if err := json.NewDecoder(r.Body).Decode(&assertion); err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+
+		result := db.Create(&assertion)
+		if result.Error != nil {
+			http.Error(w, "Failed to create assertion", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		if err := json.NewEncoder(w).Encode(assertion); err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
 		}

@@ -23,7 +23,10 @@ func main() {
 	http.HandleFunc("GET /persons/id/{id}", handlers.GetPersonByID(conn))
 	http.HandleFunc("GET /badges", handlers.GetBadges(conn))
 	http.HandleFunc("GET /badges/{id}", handlers.GetBadgeByID(conn))
+	http.HandleFunc("GET /assertions/{id}", handlers.GetAssertionsByID(conn))
+	http.HandleFunc("GET /persons/nickname/{person_nickname}/badges", handlers.GetAssertionsByPersonNickname(conn))
 	http.HandleFunc("POST /badges", handlers.CreateBadge(conn))
+	http.HandleFunc("POST /assertions", handlers.PostAssertion(conn))
 
 	// 4. start the server
 	log.Println("starting server on :8080")
