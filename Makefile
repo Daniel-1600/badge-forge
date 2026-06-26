@@ -12,16 +12,16 @@ format:
 server:
 	air
 
-#build the server binary
+#build the project
 build:
-	go build -o bin/tahrir cmd/server/main.go
+	go build ./...
 
 #start the database container
 db-start:
 	podman start tahrir-pg
 
 #check all code quality checks
-check: format lint
+checks: format lint
 
 #download dependencies
 deps:

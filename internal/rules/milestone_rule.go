@@ -29,5 +29,5 @@ func (r *MilestoneRule) Evaluate(event Event) bool {
 	r.DB.Model(&models.Assertion{}).Where("person_id = ?", person.ID).Count(&assertionCount)
 
 	// Check if the assertion count meets or exceeds the threshold
-	return assertionCount == int64(r.Threshold)
+	return assertionCount >= int64(r.Threshold)
 }
