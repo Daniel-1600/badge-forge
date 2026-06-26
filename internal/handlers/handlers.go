@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"tahrir-go/internal/models"
+	"tahrir-go/internal/rules"
 )
 
 // GetPersons fetches a list of persons from the database
@@ -195,7 +196,7 @@ func GetAssertionsByPersonNickname(db *gorm.DB) http.HandlerFunc {
 }
 
 // CreateAssertion creates a new assertion in the database
-func PostAssertion(db *gorm.DB) http.HandlerFunc {
+func PostAssertion(db *gorm.DB, eventChannel chan rules.Event) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var assertion models.Assertion
 		if err := json.NewDecoder(r.Body).Decode(&assertion); err != nil {
@@ -215,5 +216,14 @@ func PostAssertion(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
 		}
+
+		//succesfully fire the event
+		go func() {
+			eventChannel <- rules.Event{
+				Type:     rules.AssertionCreated,
+				PersonID: assertion.PersonID,
+				BadgeID:  assertion.BadgeID,
+			}
+		}()
 	}
 }

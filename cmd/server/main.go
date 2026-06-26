@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"tahrir-go/internal/db"
 	"tahrir-go/internal/handlers"
+	"tahrir-go/internal/rules"
+	"tahrir-go/internal/rules/workers"
 )
 
 // @title           Tahrir API
@@ -23,7 +25,19 @@ func main() {
 
 	log.Println("connected to Tahrir database")
 
-	// 3. set up routes
+	eventChannel := make(chan rules.Event)
+
+	w := worker.Worker{
+		Events: eventChannel,
+		DB:     conn,
+		Rules: []rules.Rule{
+			&rules.MilestoneRule{Threshold: 3, DB: conn},
+		},
+	}
+
+	w.Start()
+
+	// set up routes
 	http.HandleFunc("GET /persons", handlers.GetPersons(conn))
 	http.HandleFunc("GET /persons/{nickname}", handlers.GetPersonByNickname(conn))
 	http.HandleFunc("GET /persons/id/{id}", handlers.GetPersonByID(conn))
@@ -32,9 +46,9 @@ func main() {
 	http.HandleFunc("GET /assertions/{id}", handlers.GetAssertionByID(conn))
 	http.HandleFunc("GET /persons/nickname/{person_nickname}/badges", handlers.GetAssertionsByPersonNickname(conn))
 	http.HandleFunc("POST /badges", handlers.CreateBadge(conn))
-	http.HandleFunc("POST /assertions", handlers.PostAssertion(conn))
+	http.HandleFunc("POST /assertions", handlers.PostAssertion(conn, eventChannel))
 
-	// 4. start the server
+	//start the server
 	log.Println("starting server on :8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("server failed: %v", err)
