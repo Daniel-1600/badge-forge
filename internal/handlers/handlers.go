@@ -140,7 +140,7 @@ func CreateBadge(db *gorm.DB) http.HandlerFunc {
 }
 
 // GetAssertionsByID fetches assertions by ID from the database
-func GetAssertionsByID(db *gorm.DB) http.HandlerFunc {
+func GetAssertionByID(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		if id == "" {
@@ -148,15 +148,19 @@ func GetAssertionsByID(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		var assertions []models.Assertion
-		result := db.Limit(5).Find(&assertions, "id = ?", id)
+		var assertion models.Assertion
+		result := db.First(&assertion, "id = ?", id)
 		if result.Error != nil {
-			http.Error(w, "Failed to fetch assertions", http.StatusInternalServerError)
+			if result.RowsAffected == 0 {
+				http.Error(w, "Assertion not found", http.StatusNotFound)
+				return
+			}
+			http.Error(w, "Failed to fetch assertion", http.StatusInternalServerError)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(assertions); err != nil {
+		if err := json.NewEncoder(w).Encode(assertion); err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
 		}
