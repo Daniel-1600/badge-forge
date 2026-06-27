@@ -207,12 +207,3 @@ make docker-run
 
 This uses `--network host` and reads configuration from `.env`. The server is exposed on port `8080`.
 
-## Contributing
-
-1. Fork the repository and create a feature branch.
-2. Run `make checks` before submitting a pull request to ensure your code passes formatting and linting.
-3. Keep pull requests focused; one feature or fix per PR.
-
-## License
-
-This project is a Fedora Infrastructure initiative. See the original [Tahrir](https://github.com/fedora-infra/tahrir) repository for license and attribution details.
