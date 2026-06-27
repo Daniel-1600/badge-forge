@@ -6,6 +6,7 @@ import (
 	"tahrir-go/internal/db"
 	"tahrir-go/internal/models"
 	"tahrir-go/internal/rules"
+	"time"
 )
 
 type Worker struct {
@@ -22,6 +23,7 @@ func (w *Worker) Start() {
 					if err := db.CreateAssertion(w.DB, &models.Assertion{
 						PersonID: event.PersonID,
 						BadgeID:  event.BadgeID,
+						IssuedOn: time.Now(),
 					}); err != nil {
 						log.Printf("failed to create assertion: %v", err)
 					} else {

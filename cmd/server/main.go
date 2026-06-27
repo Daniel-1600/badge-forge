@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
+	"os"
 	"tahrir-go/internal/db"
 	"tahrir-go/internal/handlers"
 	"tahrir-go/internal/rules"
@@ -16,8 +18,10 @@ import (
 // @BasePath        /
 
 func main() {
-
-	dsn := "host=localhost user=tahrir password=tahrir dbname=tahrir port=5432 sslmode=disable"
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	dsn := "host=" + os.Getenv("DB_HOST") + " user=" + os.Getenv("DB_USER") + " password=" + os.Getenv("DB_PASSWORD") + " dbname=" + os.Getenv("DB_NAME") + " port=" + os.Getenv("DB_PORT") + " sslmode=disable"
 	conn, err := db.Connect(dsn)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
