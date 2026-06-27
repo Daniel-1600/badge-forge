@@ -27,3 +27,9 @@ checks: format lint
 deps:
 	go mod tidy
 	go mod download
+
+docker-build:
+	docker build -t tahrir-go .
+
+docker-run:
+	docker run --network host --env-file .env tahrir-go

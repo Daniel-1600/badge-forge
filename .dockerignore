@@ -1,0 +1,9 @@
+/.github
+/bin
+/tmp
+readme.md
+.air.toml
+.env
+Dockerfile
+.gitignore
+golangci.yml
