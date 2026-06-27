@@ -1,6 +1,6 @@
 # tahrir-go
 
-A Go rewrite of [Tahrir](https://github.com/fedora-infra/tahrir) and [Tahrir-api](https://github.com/fedora-infra/tahrir-api)  the open badge assertion server originally written in Python. This project exposes a JSON REST API for managing persons, badges, and badge assertions, backed by a PostgreSQL database.
+This project is inspired [Tahrir](https://github.com/fedora-infra/tahrir) and [Tahrir-api](https://github.com/fedora-infra/tahrir-api) where I have been a contributor the open badge assertion server originally written in Python. This project exposes a JSON REST API for managing persons, badges, and badge assertions, backed by a PostgreSQL database.
 
 ## Features
 
