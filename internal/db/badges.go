@@ -11,4 +11,3 @@ func GetBadges(db *gorm.DB) ([]models.Badge, error) {
 	result := db.Limit(5).Find(&badges)
 	return badges, result.Error
 }
-
