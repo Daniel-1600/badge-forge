@@ -4,16 +4,40 @@ import (
 	"encoding/json"
 	"gorm.io/gorm"
 	"net/http"
+	"errors"
+	"strconv"
 	"tahrir-go/internal/models"
 	"tahrir-go/internal/rules"
+	dbstore "tahrir-go/internal/db"
 )
 
-// GetPersons fetches a list of persons from the database
-func GetPersons(db *gorm.DB) http.HandlerFunc {
+// GetPersonsHandler fetches a list of persons from the database
+func GetPersonsHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var persons []models.Person
-		result := db.Limit(5).Find(&persons)
-		if result.Error != nil {
+		pageStr := r.URL.Query().Get("page")
+		limitStr := r.URL.Query().Get("limit")
+
+		page := 1
+		limit := 10
+
+		if pageStr != "" {
+			if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+				page = p
+			}
+		}
+		if limitStr != "" {
+			if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+				limit = l
+			}
+		}
+
+		persons, err := dbstore.GetPersons(db, page, limit)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				http.Error(w, "No persons found", http.StatusNotFound)
+				return
+			}
 			http.Error(w, "Failed to fetch persons", http.StatusInternalServerError)
 			return
 		}
@@ -35,23 +59,27 @@ func GetPersonByNickname(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		var persons []models.Person
-		result := db.Limit(5).Find(&persons, "nickname = ?", nickname)
-		if result.Error != nil {
-			http.Error(w, "Failed to fetch persons", http.StatusInternalServerError)
+		var person models.Person
+		person, err := dbstore.GetPersonByNickname(db, nickname)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				http.Error(w, "Person not found", http.StatusNotFound)
+				return
+			}
+			http.Error(w, "Failed to fetch person", http.StatusInternalServerError)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(persons); err != nil {
+		if err := json.NewEncoder(w).Encode(person); err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
 		}
 	}
 }
 
-// GetPersonByID fetches a person by ID from the database
-func GetPersonByID(db *gorm.DB) http.HandlerFunc {
+// GetPersonByIDHandler handles the HTTP request to fetch a single person by ID
+func GetPersonByIDHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		if id == "" {
@@ -59,27 +87,53 @@ func GetPersonByID(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		var persons []models.Person
-		result := db.Limit(5).Find(&persons, "id = ?", id)
-		if result.Error != nil {
-			http.Error(w, "Failed to fetch persons", http.StatusInternalServerError)
+		
+		person, err := dbstore.GetPersonByID(db, id)
+		if err != nil {
+			// Check if the error is just that the record doesn't exist
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				http.Error(w, "Person not found", http.StatusNotFound)
+				return
+			}
+			http.Error(w, "Failed to fetch person", http.StatusInternalServerError)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(persons); err != nil {
+		if err := json.NewEncoder(w).Encode(person); err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
 		}
 	}
 }
 
-// GetBadges fetches a list of badges from the database
-func GetBadges(db *gorm.DB) http.HandlerFunc {
+// GetBadgesHandler fetches a list of badges from the database
+func GetBadgesHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var badges []models.Badge
-		result := db.Limit(5).Find(&badges)
-		if result.Error != nil {
+
+		pageStr := r.URL.Query().Get("page")
+        limitStr := r.URL.Query().Get("limit")
+
+        page := 1
+        limit := 10
+
+        if pageStr != "" {
+            if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+                page = p
+            }
+        }
+        if limitStr != "" {
+            if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+                limit = l
+            }
+        }
+		badges, err := dbstore.GetBadges(db, page, limit)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				http.Error(w, "No badges found", http.StatusNotFound)
+				return
+			}
 			http.Error(w, "Failed to fetch badges", http.StatusInternalServerError)
 			return
 		}
@@ -92,8 +146,8 @@ func GetBadges(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-// GetBadgeByID fetches a badge by ID from the database
-func GetBadgeByID(db *gorm.DB) http.HandlerFunc {
+// GetBadgeByIDHandler fetches a badge by ID from the database
+func GetBadgeByIDHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		if id == "" {
@@ -101,10 +155,13 @@ func GetBadgeByID(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		var badge models.Badge
-		result := db.First(&badge, "id = ?", id)
-		if result.RowsAffected == 0 {
-			http.Error(w, "Badge not found", http.StatusNotFound)
+		badge, err := dbstore.GetBadgeByID(db, id)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				http.Error(w, "Badge not found", http.StatusNotFound)
+				return
+			}
+			http.Error(w, "Failed to fetch badge", http.StatusInternalServerError)
 			return
 		}
 
@@ -116,7 +173,7 @@ func GetBadgeByID(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-// CreateBadge creates a new badge in the database
+// CreateBadgeHandler creates a new badge in the database
 func CreateBadge(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var badge models.Badge
@@ -140,8 +197,8 @@ func CreateBadge(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-// GetAssertionsByID fetches assertions by ID from the database
-func GetAssertionByID(db *gorm.DB) http.HandlerFunc {
+// GetAssertionsByIDHandler fetches assertions by ID from the database
+func GetAssertionByIDHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		if id == "" {

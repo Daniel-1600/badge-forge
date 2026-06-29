@@ -40,12 +40,12 @@ func main() {
 	w.Start()
 
 	// set up routes
-	http.HandleFunc("GET /persons", handlers.GetPersons(conn))
+	http.HandleFunc("GET /persons", handlers.GetPersonsHandler(conn))
 	http.HandleFunc("GET /persons/{nickname}", handlers.GetPersonByNickname(conn))
-	http.HandleFunc("GET /persons/id/{id}", handlers.GetPersonByID(conn))
-	http.HandleFunc("GET /badges", handlers.GetBadges(conn))
-	http.HandleFunc("GET /badges/{id}", handlers.GetBadgeByID(conn))
-	http.HandleFunc("GET /assertions/{id}", handlers.GetAssertionByID(conn))
+	http.HandleFunc("GET /persons/id/{id}", handlers.GetPersonByIDHandler(conn))
+	http.HandleFunc("GET /badges", handlers.GetBadgesHandler(conn))
+	http.HandleFunc("GET /badges/{id}", handlers.GetBadgeByIDHandler(conn))
+	http.HandleFunc("GET /assertions/{id}", handlers.GetAssertionByIDHandler(conn))
 	http.HandleFunc("GET /persons/nickname/{person_nickname}/badges", handlers.GetAssertionsByPersonNickname(conn))
 	http.HandleFunc("POST /badges", handlers.CreateBadge(conn))
 	http.HandleFunc("POST /assertions", handlers.PostAssertion(conn, eventChannel))

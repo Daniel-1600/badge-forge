@@ -1,4 +1,4 @@
-.phony: lint format server build db-start check deps
+.phony: lint format server build db-start check deps db-shell docker-build docker-run
 
 #check all go files for linting issues
 lint:
@@ -33,3 +33,7 @@ docker-build:
 
 docker-run:
 	docker run --network host --env-file .env tahrir-go
+
+
+db-shell:
+	-podman exec -it tahrir-pg psql -U tahrir -d tahrir
