@@ -1,4 +1,4 @@
---- +goose Up
+-- +goose Up
 CREATE TABLE assertions (
     id          TEXT PRIMARY KEY,
     badge_id    TEXT,
