@@ -1,4 +1,4 @@
-.phony: lint format server build db-start check deps db-shell docker-build docker-run db-create
+.phony: lint format server build db-start check deps db-shell docker-build docker-run db-create test test-verbose test-one
 
 include .env
 export
@@ -39,7 +39,7 @@ db-create:
 		--name tahrir-pg \
 		-e POSTGRES_USER=tahrir \
 		-e POSTGRES_PASSWORD=tahrir \
-		-e POSTGRES_DB=tahrir \
+		-e POSTGRES_DB=tahrir_go \
 		-p 5432:5432 \
 		postgres:16
 
@@ -64,3 +64,15 @@ docker-run:
 
 db-shell:
 	-podman exec -it tahrir-pg psql -U tahrir -d tahrir_go || echo "Failed to connect to database"
+
+#run all tests
+test:
+	go test ./...
+
+#run all tests with verbose output
+test-verbose:
+	go test ./... -v
+
+#run a specific test by name, e.g. make test-one NAME=TestGetPersonByID
+test-one:
+	go test ./... -run $(NAME) -v
