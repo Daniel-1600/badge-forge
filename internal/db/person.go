@@ -8,7 +8,7 @@ import (
 // GetPersons fetches a list of persons from the database
 func GetPersons(db *gorm.DB, page int, limit int) ([]models.Person, error) {
 	var persons []models.Person
-	offset := (page-1) * limit
+	offset := (page - 1) * limit
 	result := db.Limit(limit).Offset(offset).Find(&persons)
 	return persons, result.Error
 }

@@ -39,5 +39,6 @@ type Assertion struct {
 	IssuedOn  time.Time
 	Recipient string
 	IssuedFor string
-	Badge     Badge `gorm:"foreignKey:BadgeID"`
+	Badge     Badge  `gorm:"foreignKey:BadgeID"`
+	Person    Person `gorm:"foreignKey:PersonID"`
 }

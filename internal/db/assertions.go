@@ -30,6 +30,4 @@ func GetAssertionsByPersonNickname(db *gorm.DB, nickname string) ([]models.Asser
 		Where("persons.nickname = ?", nickname).
 		Find(&assertions)
 	return assertions, result.Error
-}		
-
-
+}

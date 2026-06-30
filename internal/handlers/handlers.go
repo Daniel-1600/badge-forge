@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"gorm.io/gorm"
 	"net/http"
-	"errors"
 	"strconv"
+	dbstore "tahrir-go/internal/db"
 	"tahrir-go/internal/models"
 	"tahrir-go/internal/rules"
-	dbstore "tahrir-go/internal/db"
 )
 
 // GetPersonsHandler fetches a list of persons from the database
@@ -87,7 +87,6 @@ func GetPersonByIDHandler(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		
 		person, err := dbstore.GetPersonByID(db, id)
 		if err != nil {
 			// Check if the error is just that the record doesn't exist
@@ -113,21 +112,21 @@ func GetBadgesHandler(db *gorm.DB) http.HandlerFunc {
 		var badges []models.Badge
 
 		pageStr := r.URL.Query().Get("page")
-        limitStr := r.URL.Query().Get("limit")
+		limitStr := r.URL.Query().Get("limit")
 
-        page := 1
-        limit := 10
+		page := 1
+		limit := 10
 
-        if pageStr != "" {
-            if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
-                page = p
-            }
-        }
-        if limitStr != "" {
-            if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
-                limit = l
-            }
-        }
+		if pageStr != "" {
+			if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+				page = p
+			}
+		}
+		if limitStr != "" {
+			if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+				limit = l
+			}
+		}
 		badges, err := dbstore.GetBadges(db, page, limit)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {

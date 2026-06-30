@@ -29,7 +29,7 @@ func CreateBadge(db *gorm.DB, badge *models.Badge) error {
 		return err
 	}
 	return nil
-}	
+}
 
 // GetBadgesByPersonNickname fetches badges associated with a person by their nickname
 func GetBadgesByPersonNickname(db *gorm.DB, nickname string) ([]models.Badge, error) {
@@ -39,7 +39,7 @@ func GetBadgesByPersonNickname(db *gorm.DB, nickname string) ([]models.Badge, er
 		Where("persons.nickname = ?", nickname).
 		Find(&badges)
 	return badges, result.Error
-}		
+}
 
 // GetBadgesByTag fetches badges associated with a specific tag
 func GetBadgesByTag(db *gorm.DB, tag string) ([]models.Badge, error) {

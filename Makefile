@@ -1,4 +1,9 @@
-.phony: lint format server build db-start check deps db-shell docker-build docker-run
+.phony: lint format server build db-start check deps db-shell docker-build docker-run db-create
+
+include .env
+export
+
+DB_DSN=host=$(DB_HOST) port=$(DB_PORT) user=$(DB_USER) password=$(DB_PASSWORD) dbname=$(DB_NAME) sslmode=disable
 
 #check all go files for linting issues
 lint:
@@ -15,6 +20,28 @@ server:
 #build the project
 build:
 	go build ./...
+
+#apply all pending migrations
+migrate-up:
+	goose -dir internal/db/migrations postgres "$(DB_DSN)" up
+
+#roll back the last migration
+migrate-down:
+	goose -dir internal/db/migrations postgres "$(DB_DSN)" down
+
+#show migration status
+migrate-status:
+	goose -dir internal/db/migrations postgres "$(DB_DSN)" status
+
+#create the database container (first time only)
+db-create:
+	podman run -d \
+		--name tahrir-pg \
+		-e POSTGRES_USER=tahrir \
+		-e POSTGRES_PASSWORD=tahrir \
+		-e POSTGRES_DB=tahrir \
+		-p 5432:5432 \
+		postgres:16
 
 #start the database container
 db-start:
@@ -36,4 +63,4 @@ docker-run:
 
 
 db-shell:
-	-podman exec -it tahrir-pg psql -U tahrir -d tahrir
+	-podman exec -it tahrir-pg psql -U tahrir -d tahrir_go || echo "Failed to connect to database"
