@@ -14,12 +14,11 @@ import (
 // setupTestDB opens a connection to the local tahrir_go test database.
 // It's called at the top of every test that needs a real *gorm.DB.
 func setupTestDB(t *testing.T) *gorm.DB {
-	t.Helper() // marks this as a helper, this basically helps when debugging 
+	t.Helper() // marks this as a helper, this basically helps when debugging
 
 	// .env lives at the project root, but `go test` runs from internal/db/,
 	// so we go up two directories to find it.
-	err := godotenv.Load("../../.env") // Load the .env file to get the database connection details
-	require.NoError(t, err, "failed to load .env file") //imediately fail the test if .env file is not loaded
+	_ = godotenv.Load("../../.env") // Load the .env file to get the database connection details
 
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
