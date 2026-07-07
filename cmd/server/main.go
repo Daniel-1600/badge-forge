@@ -41,7 +41,7 @@ func main() {
 
 	// set up routes
 	http.HandleFunc("GET /persons", handlers.GetPersonsHandler(conn))
-	http.HandleFunc("GET /persons/{nickname}", handlers.GetPersonByNickname(conn))
+	http.HandleFunc("GET /persons/{nickname}", handlers.GetPersonByNicknameHandler(conn))
 	http.HandleFunc("GET /persons/id/{id}", handlers.GetPersonByIDHandler(conn))
 	http.HandleFunc("GET /badges", handlers.GetBadgesHandler(conn))
 	http.HandleFunc("GET /badges/{id}", handlers.GetBadgeByIDHandler(conn))

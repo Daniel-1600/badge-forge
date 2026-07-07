@@ -51,7 +51,7 @@ func GetPersonsHandler(db *gorm.DB) http.HandlerFunc {
 }
 
 // GetPersonByNickname fetches a person by nickname from the database
-func GetPersonByNickname(db *gorm.DB) http.HandlerFunc {
+func GetPersonByNicknameHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		nickname := r.PathValue("nickname")
 		if nickname == "" {
