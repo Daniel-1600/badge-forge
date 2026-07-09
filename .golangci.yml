@@ -6,8 +6,9 @@ linters:
     # - gosimple
     - govet
     - unused
-    # - gofmt
 
 formatters:
   enable:
     - gofmt
+    - gci
+    - swaggo

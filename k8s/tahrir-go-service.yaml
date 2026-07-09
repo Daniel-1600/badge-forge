@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2026-07-09T22:34:49Z"
+  labels:
+    app: go-app
+  name: go-app
+  namespace: default
+  resourceVersion: "74371"
+  uid: 18cda6ea-24f4-4854-8538-a636e8619617
+spec:
+  clusterIP: 10.111.103.3
+  clusterIPs:
+  - 10.111.103.3
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: go-app
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
