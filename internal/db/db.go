@@ -2,19 +2,38 @@ package db
 
 import (
 	"fmt"
+	"log"
+	"time"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 )
 
 func Connect(dsn string) (*gorm.DB, error) {
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %v", err)
+	const (
+		maxRetries = 5
+		delay = 2 * time.Second
+	)
+
+	var (
+		db  *gorm.DB
+		err error
+	)
+
+	for i := 1; i <= maxRetries; i++ {
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		if err == nil {
+			log.Println("Connected to Tahrir database")
+			return db, nil
+		}
+
+		log.Printf("Database connection failed (attempt %d/%d): %v", i, maxRetries, err)
+
+		if i < maxRetries {
+			time.Sleep(delay)
+		}
 	}
 
-	log.Println("connected to Tahrir database")
-
-	return db, nil
+	return nil, fmt.Errorf("failed to connect to database after %d attempts: %w", maxRetries, err)
 }
