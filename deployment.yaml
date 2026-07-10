@@ -15,13 +15,14 @@ spec:
       labels:
         app: go-app
     spec:
-    initContainers:
-      - name: wait-for-db
-        image: busybox
-        command: ['sh', '-c', 'until nc -z host.minikube.internal 5432; do echo waiting for db; sleep 2; done']
-    containers:
-      - image: my-go-app:v1
-        name: my-go-app
-        imagePullPolicy: Never 
-        resources: {}
+      initContainers: 
+        - name: wait-for-db
+          image: busybox
+          command: ['sh', '-c', 'until nc -z host.minikube.internal 5432; do echo waiting for db; sleep 2; done']
+      containers: 
+        - image: my-go-app:v1
+          name: my-go-app
+          imagePullPolicy: Never 
+          resources: {}
 status: {}
+

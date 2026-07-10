@@ -13,7 +13,7 @@ func Connect(dsn string) (*gorm.DB, error) {
 
 	const (
 		maxRetries = 5
-		delay = 2 * time.Second
+		delay      = 2 * time.Second
 	)
 
 	var (
