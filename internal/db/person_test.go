@@ -8,7 +8,7 @@ import (
 
 func TestGetPersonByID(t *testing.T) {
 
-	db := setupTestDB(t) // Call the setupTestDB function to get a *gorm.DB instance
+	db := setupTestDB(t) 
 
 	// Create a test person in the database
 	err := db.Exec(`INSERT INTO persons (email, nickname) values(?,?)`, "test@example.com", "testuser").Error
@@ -23,10 +23,6 @@ func TestGetPersonByID(t *testing.T) {
 	require.Equal(t, "testuser", person.Nickname)
 	require.Equal(t, "test@example.com", person.Email)
 
-	// clean up the db when done
-	t.Cleanup(func() {
-		db.Exec(`DELETE FROM persons WHERE email = ?`, "test@example.com")
-	})
 }
 
 func TestGetPersons(t *testing.T) {
@@ -40,11 +36,6 @@ func TestGetPersons(t *testing.T) {
 	).Error
 	require.NoError(t, err)
 
-	t.Cleanup(func() {
-		err := db.Exec(`DELETE FROM persons WHERE nickname IN (?, ?, ?)`,
-			"daniel-test", "alice-test", "bob-test").Error
-		require.NoError(t, err)
-	})
 
 	persons, err := GetPersons(db, 1, 10)
 	require.NoError(t, err)

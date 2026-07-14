@@ -1,37 +1,23 @@
 package db
 
 import (
-	"fmt"
-	"os"
 	"testing"
 
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/require"
-	"gorm.io/driver/postgres"
+    "tahrir-go/internal/models"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-// setupTestDB opens a connection to the local tahrir_go test database.
-// It's called at the top of every test that needs a real *gorm.DB.
 func setupTestDB(t *testing.T) *gorm.DB {
-	t.Helper() // marks this as a helper, this basically helps when debugging
+	t.Helper() 
 
-	// .env lives at the project root, but `go test` runs from internal/db/,
-	// so we go up two directories to find it.
-	_ = godotenv.Load("../../.env") // Load the .env file to get the database connection details
+	// in-memory SQLite — fresh, isolated database per test, discarded when the test ends
+	database, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err, "failed to open in-memory test database")
 
-	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-	)
-
-	// gorm connects to the database using the provided DSN and configuration.
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	require.NoError(t, err, "failed to connect to test database")
+	err = database.AutoMigrate(&models.Person{}, &models.Badge{}, &models.Assertion{})
+	require.NoError(t, err, "failed to migrate schema")
 
 	return database
 }
