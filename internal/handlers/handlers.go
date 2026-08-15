@@ -3,9 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"gorm.io/gorm"
 	"net/http"
 	"strconv"
+
+	"gorm.io/gorm"
 	dbstore "tahrir-go/internal/db"
 	"tahrir-go/internal/models"
 	"tahrir-go/internal/rules"

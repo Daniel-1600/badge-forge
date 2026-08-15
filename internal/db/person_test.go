@@ -2,8 +2,9 @@ package db
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetPersonByID(t *testing.T) {

@@ -11,4 +11,3 @@ formatters:
   enable:
     - gofmt
     - gci
-    - swaggo

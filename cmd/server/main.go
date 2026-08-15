@@ -1,21 +1,22 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/joho/godotenv"
 	"tahrir-go/internal/db"
 	"tahrir-go/internal/handlers"
 	"tahrir-go/internal/rules"
-	"tahrir-go/internal/rules/workers"
+	worker "tahrir-go/internal/rules/workers"
 )
 
-// @title           Tahrir API
-// @version         1.0
-// @description     Badge assertion API
-// @host            localhost:8080
-// @BasePath        /
+//	@title			Tahrir API
+//	@version		1.0
+//	@description	Badge assertion API
+//	@host			localhost:8080
+//	@BasePath		/
 
 func main() {
 	_ = godotenv.Load()

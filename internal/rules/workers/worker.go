@@ -1,12 +1,13 @@
 package worker
 
 import (
-	"gorm.io/gorm"
 	"log"
+	"time"
+
+	"gorm.io/gorm"
 	"tahrir-go/internal/db"
 	"tahrir-go/internal/models"
 	"tahrir-go/internal/rules"
-	"time"
 )
 
 type Worker struct {
