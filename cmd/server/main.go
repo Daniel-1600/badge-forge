@@ -48,6 +48,8 @@ func main() {
 	w.Start()
 
 	// set up routes
+	http.HandleFunc("GET /healthz", handlers.HealthzHandler())
+	http.HandleFunc("GET /readyz", handlers.ReadyzHandler(conn))
 	http.HandleFunc("GET /persons", handlers.GetPersonsHandler(conn))
 	http.HandleFunc("GET /persons/{nickname}", handlers.GetPersonByNicknameHandler(conn))
 	http.HandleFunc("GET /persons/id/{id}", handlers.GetPersonByIDHandler(conn))

@@ -283,3 +283,32 @@ func PostAssertion(db *gorm.DB, eventChannel chan rules.Event) http.HandlerFunc 
 		}()
 	}
 }
+
+// HealthzHandler is a liveness check - just confirms the process is up
+func HealthzHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		if _, err := w.Write([]byte("ok")); err != nil {
+			return
+		}
+	}
+}
+
+// ReadyzHandler is a readiness check - confirms the DB connection is alive
+func ReadyzHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		sqlDB, err := db.DB()
+		if err != nil {
+			http.Error(w, "db unavailable", http.StatusServiceUnavailable)
+			return
+		}
+		if err := sqlDB.Ping(); err != nil {
+			http.Error(w, "db unreachable", http.StatusServiceUnavailable)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		if _, err := w.Write([]byte("ready")); err != nil {
+			return
+		}
+	}
+}
