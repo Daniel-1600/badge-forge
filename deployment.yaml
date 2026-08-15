@@ -15,14 +15,33 @@ spec:
       labels:
         app: go-app
     spec:
-      initContainers: 
+      initContainers:
         - name: wait-for-db
           image: busybox
           command: ['sh', '-c', 'until nc -z host.minikube.internal 5432; do echo waiting for db; sleep 2; done']
-      containers: 
+      containers:
         - image: my-go-app:v1
           name: my-go-app
-          imagePullPolicy: Never 
-          resources: {}
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "250m"
+              memory: "128Mi"
 status: {}
-
