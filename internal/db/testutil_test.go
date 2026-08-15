@@ -4,13 +4,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-    "tahrir-go/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"tahrir-go/internal/models"
 )
 
 func setupTestDB(t *testing.T) *gorm.DB {
-	t.Helper() 
+	t.Helper()
 
 	// in-memory SQLite — fresh, isolated database per test, discarded when the test ends
 	database, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})

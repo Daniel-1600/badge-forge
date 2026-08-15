@@ -8,7 +8,7 @@ import (
 
 func TestGetPersonByID(t *testing.T) {
 
-	db := setupTestDB(t) 
+	db := setupTestDB(t)
 
 	// Create a test person in the database
 	err := db.Exec(`INSERT INTO persons (email, nickname) values(?,?)`, "test@example.com", "testuser").Error
@@ -35,7 +35,6 @@ func TestGetPersons(t *testing.T) {
 		"bob-test", "bob-test@example.com",
 	).Error
 	require.NoError(t, err)
-
 
 	persons, err := GetPersons(db, 1, 10)
 	require.NoError(t, err)

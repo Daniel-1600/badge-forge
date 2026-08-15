@@ -1,0 +1,9 @@
+rules:
+  - id: first-milestone
+    name: "First Milestone"
+    description: "Awarded for submitting your first 3 contributions"
+    type: milestone
+    enabled: true
+    metric: submissions_count
+    threshold: 3
+    badge_id: badge-first-steps

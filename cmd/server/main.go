@@ -28,13 +28,20 @@ func main() {
 	log.Println("connected to Tahrir database")
 
 	eventChannel := make(chan rules.Event)
+	rulesFile := os.Getenv("RULES_FILE")
+	if rulesFile == "" {
+		rulesFile = "config/rules.yaml"
+	}
+
+	configuredRules, err := rules.LoadRules(rulesFile, conn)
+	if err != nil {
+		log.Fatalf("failed to load rules: %v", err)
+	}
 
 	w := worker.Worker{
 		Events: eventChannel,
 		DB:     conn,
-		Rules: []rules.Rule{
-			&rules.MilestoneRule{Threshold: 3, DB: conn},
-		},
+		Rules:  configuredRules,
 	}
 
 	w.Start()

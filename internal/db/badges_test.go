@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
 func TestGetBadges(t *testing.T) {
 	db := setupTestDB(t)
 
@@ -17,7 +16,7 @@ func TestGetBadges(t *testing.T) {
 	).Error
 	require.NoError(t, err)
 
-	badges, err := GetBadges(db,1,10)
+	badges, err := GetBadges(db, 1, 10)
 	require.NoError(t, err)
 
 	names := make([]string, len(badges))
@@ -31,5 +30,3 @@ func TestGetBadges(t *testing.T) {
 		"dancing-with-toshio",
 	}, names)
 }
-
-

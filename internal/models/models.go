@@ -22,9 +22,9 @@ func (p *Person) TableName() string {
 type Badge struct {
 	ID          string `gorm:"primaryKey;type:varchar(128)"`
 	Name        string `gorm:"not null"`
-	Image       string 
-	Description string 
-	Criteria    string 
+	Image       string
+	Description string
+	Criteria    string
 	IssuerID    int
 	CreatedOn   time.Time
 	Tags        string

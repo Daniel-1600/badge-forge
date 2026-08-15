@@ -185,7 +185,7 @@ func CreateBadge(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, "Failed to create badge", http.StatusInternalServerError)
 			return
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		if err := json.NewEncoder(w).Encode(badge); err != nil {
