@@ -25,7 +25,7 @@ type Badge struct {
 	Image       string
 	Description string
 	Criteria    string
-	IssuerID    int
+	IssuerID    *int // nil when the badge has no issuer
 	CreatedOn   time.Time
 	Tags        string
 	Stl         string
