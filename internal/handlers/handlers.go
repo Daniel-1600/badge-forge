@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
 	"gorm.io/gorm"
 	dbstore "tahrir-go/internal/db"
@@ -293,6 +294,10 @@ func PostAssertion(db *gorm.DB, eventChannel chan rules.Event) http.HandlerFunc 
 		if err := json.NewDecoder(r.Body).Decode(&assertion); err != nil {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
+		}
+		// default to now when the client doesn't send an issue date
+		if assertion.IssuedOn.IsZero() {
+			assertion.IssuedOn = time.Now()
 		}
 
 		result := db.Create(&assertion)
