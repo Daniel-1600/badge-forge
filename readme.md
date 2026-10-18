@@ -5,7 +5,7 @@ This project is inspired [Tahrir](https://github.com/fedora-infra/tahrir) and [T
 ## Features
 
 - **REST API** — Manage persons, badges, and badge assertions over HTTP.
-- **Event-driven rule engine** — Automatically award milestone badges when a person reaches a configurable assertion threshold.
+- **Event-driven rule engine** — Automatically award milestone badges when a person reaches a configurable assertion threshold, and badges for merged GitHub pull requests.
 - **GORM + PostgreSQL** — Type-safe ORM-backed persistence with a well-defined model layer.
 - **Live reload** — Hot-rebuild during development via [Air](https://github.com/air-verse/air).
 - **Docker support** — Multi-stage Dockerfile for lean production images.
@@ -15,15 +15,18 @@ This project is inspired [Tahrir](https://github.com/fedora-infra/tahrir) and [T
 ```
 tahrir-go/
 ├── cmd/
-│   └── server/
-│       └── main.go          # Application entrypoint
+│   ├── server/
+│   │   └── main.go          # Application entrypoint
+│   └── award-prs/
+│       └── main.go          # Awards merged_prs badges from stored GitHub PRs
 ├── internal/
 │   ├── db/                  # Database connection and query helpers
 │   ├── handlers/            # HTTP handler functions
-│   ├── models/              # GORM model definitions (Person, Badge, Assertion)
+│   ├── models/              # GORM model definitions (Person, Badge, Assertion, GitHub*)
 │   └── rules/               # Rule engine interface and implementations
 │       ├── rules.go         # Event types and Rule interface
 │       ├── milestone_rule.go # MilestoneRule: awards a badge after N assertions
+│       ├── merged_prs_rule.go # MergedPRsRule: awards a badge after N merged PRs
 │       └── workers/
 │           └── worker.go    # Background worker that processes rule events
 ├── Dockerfile
@@ -176,6 +179,31 @@ rules:
     enabled: true
     threshold: 3
     badge_id: badge-first-steps
+```
+
+### MergedPRsRule
+
+The `merged_prs` rule awards its `badge_id` once a person has authored `threshold` merged pull requests in the `github_*` tables. `repository` limits it to one repository, `labels` only counts PRs carrying at least one of the listed labels, and `exclude_labels` skips PRs carrying any of them. Each person earns the badge at most once.
+
+```yaml
+rules:
+  - id: compiler-contributor
+    name: "Compiler Contributor"
+    description: "Had three compiler pull requests merged into rust-lang/rust."
+    type: merged_prs
+    enabled: true
+    repository: rust-lang/rust
+    labels: [T-compiler]
+    exclude_labels: [rollup]
+    threshold: 3
+    badge_id: rust-compiler-contributor
+```
+
+These rules don't run in the server. `make award-prs` runs them: it creates any missing `merged_prs` badges from the rule's name and description, gives each human PR author a person (matching by nickname, or a new one with their GitHub noreply email), and awards the badges. Re-running it is safe.
+
+```bash
+make db-seed-rust   # load rust-lang/team and recent rust-lang/rust PRs
+make award-prs      # award the merged_prs badges
 ```
 
 To add your own rule, implement the `rules.Rule` interface:
