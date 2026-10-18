@@ -25,6 +25,7 @@ func TestWorkerAwardsAssertionWhenMilestoneIsReached(t *testing.T) {
 
 	badge := models.Badge{ID: "badge-one", Name: "Existing badge"}
 	require.NoError(t, database.Create(&badge).Error)
+	require.NoError(t, database.Create(&models.Badge{ID: "badge-milestone", Name: "Milestone"}).Error)
 
 	for i := 1; i <= 3; i++ {
 		require.NoError(t, database.Create(&models.Assertion{
@@ -39,7 +40,7 @@ func TestWorkerAwardsAssertionWhenMilestoneIsReached(t *testing.T) {
 		DB:     database,
 		Events: events,
 		Rules: []rules.Rule{
-			&rules.MilestoneRule{Threshold: 3, DB: database},
+			&rules.MilestoneRule{Threshold: 3, BadgeID: "badge-milestone", DB: database},
 		},
 	}
 	worker.Start()

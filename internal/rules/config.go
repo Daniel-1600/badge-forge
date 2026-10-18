@@ -47,9 +47,13 @@ func LoadRules(path string, db *gorm.DB) ([]Rule, error) {
 			if definition.Threshold <= 0 {
 				return nil, fmt.Errorf("rule %q (index %d): threshold must be greater than zero", definition.Name, i)
 			}
+			if definition.BadgeID == "" {
+				return nil, fmt.Errorf("rule %q (index %d): badge_id is required", definition.Name, i)
+			}
 
 			loaded = append(loaded, &MilestoneRule{
 				Threshold: definition.Threshold,
+				BadgeID:   definition.BadgeID,
 				DB:        db,
 			})
 		default:
