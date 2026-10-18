@@ -57,6 +57,7 @@ func main() {
 	http.HandleFunc("GET /badges/{id}", handlers.GetBadgeByIDHandler(conn))
 	http.HandleFunc("GET /assertions/{id}", handlers.GetAssertionByIDHandler(conn))
 	http.HandleFunc("GET /persons/nickname/{person_nickname}/badges", handlers.GetAssertionsByPersonNickname(conn))
+	http.HandleFunc("POST /persons", handlers.CreatePersonHandler(conn))
 	http.HandleFunc("POST /badges", handlers.CreateBadge(conn))
 	http.HandleFunc("POST /assertions", handlers.PostAssertion(conn, eventChannel))
 

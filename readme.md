@@ -117,6 +117,7 @@ All responses are JSON. The server listens on `:8080`.
 | `GET` | `/persons/{nickname}` | Find person by nickname |
 | `GET` | `/persons/id/{id}` | Find person by numeric ID |
 | `GET` | `/persons/nickname/{person_nickname}/badges` | List all badge assertions for a person |
+| `POST` | `/persons` | Find or create a person by nickname (`201` if created, `200` if they already exist) |
 
 ### Badges
 
@@ -166,10 +167,15 @@ The rule engine runs as a background goroutine and processes events published by
 
 ### MilestoneRule
 
-Configured in `main.go`, the `MilestoneRule` watches for `AssertionCreated` events and automatically grants a badge when a person's total assertion count reaches a configurable threshold.
+Configured in `config/rules.yaml`, the `MilestoneRule` watches for `AssertionCreated` events and awards its `badge_id` once a person holds `threshold` assertions of other badges. Each person earns a milestone badge at most once, and the badge must already exist.
 
-```go
-&rules.MilestoneRule{Threshold: 3, DB: conn}
+```yaml
+rules:
+  - id: first-milestone
+    type: milestone
+    enabled: true
+    threshold: 3
+    badge_id: badge-first-steps
 ```
 
 To add your own rule, implement the `rules.Rule` interface:
@@ -177,10 +183,23 @@ To add your own rule, implement the `rules.Rule` interface:
 ```go
 type Rule interface {
     Evaluate(event Event) bool
+    AwardBadgeID() string
 }
 ```
 
-Then register it in the worker's `Rules` slice inside `cmd/server/main.go`.
+Then add a case for it in `rules.LoadRules` (`internal/rules/config.go`).
+
+## Trying it on real data
+
+`scripts/rust_replay.sh` replays recently merged `rust-lang/rust` pull requests into a running server, so you can watch real contributors earn badges and the milestone rule fire. It needs `gh` (logged in), `jq`, `curl` and `openssl`.
+
+```bash
+make server                      # in one terminal
+./scripts/rust_replay.sh         # in another
+API=http://localhost:9090 PAGES=5 REPO=rust-lang/cargo ./scripts/rust_replay.sh
+```
+
+Bots and rollup PRs are skipped, and assertion IDs come from PR numbers, so re-running is safe (repeats show up as `500`). Keep the results local: the contributors haven't opted in.
 
 ## Development
 

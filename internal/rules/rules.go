@@ -16,4 +16,6 @@ type Event struct {
 type Rule interface {
 	// Evaluate evaluates the rule against the given event and returns true if the rule is satisfied, false otherwise.
 	Evaluate(event Event) bool
+	// AwardBadgeID returns the ID of the badge to award when the rule is satisfied.
+	AwardBadgeID() string
 }

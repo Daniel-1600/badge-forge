@@ -107,6 +107,41 @@ func GetPersonByIDHandler(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
+// CreatePersonHandler finds a person by nickname or creates them.
+// It returns 201 when a person is created and 200 when they already exist,
+// so callers like scripts/rust_replay.sh can safely send the same person twice.
+func CreatePersonHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var payload struct {
+			Nickname string
+			Email    string
+		}
+		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+		if payload.Nickname == "" {
+			http.Error(w, "Nickname is required", http.StatusBadRequest)
+			return
+		}
+
+		person, created, err := dbstore.FindOrCreatePersonByNickname(db, payload.Nickname, payload.Email)
+		if err != nil {
+			http.Error(w, "Failed to create person", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if created {
+			w.WriteHeader(http.StatusCreated)
+		}
+		if err := json.NewEncoder(w).Encode(person); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 // GetBadgesHandler fetches a list of badges from the database
 func GetBadgesHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

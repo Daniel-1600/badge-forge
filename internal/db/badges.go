@@ -16,7 +16,9 @@ func GetBadges(db *gorm.DB, page int, limit int) ([]models.Badge, error) {
 // GetBadgeByID fetches a badge by its ID from the database
 func GetBadgeByID(db *gorm.DB, id string) (*models.Badge, error) {
 	var badge models.Badge
-	result := db.First(&badge, id)
+	// Badge IDs are strings, so they must be passed as a bound parameter;
+	// db.First(&badge, id) would treat a string ID as raw SQL.
+	result := db.First(&badge, "id = ?", id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
