@@ -7,3 +7,36 @@ rules:
     metric: submissions_count
     threshold: 3
     badge_id: badge-first-steps
+
+  # merged_prs rules are awarded by `make award-prs` from the github_* tables.
+  # Rollup PRs are excluded: they would credit whoever assembled the rollup.
+  - id: first-merged-pr
+    name: "First Merged PR"
+    description: "Had a first pull request merged into rust-lang/rust."
+    type: merged_prs
+    enabled: true
+    repository: rust-lang/rust
+    exclude_labels: [rollup]
+    threshold: 1
+    badge_id: rust-first-merged-pr
+
+  - id: ten-merged-prs
+    name: "Ten Merged PRs"
+    description: "Had ten pull requests merged into rust-lang/rust."
+    type: merged_prs
+    enabled: true
+    repository: rust-lang/rust
+    exclude_labels: [rollup]
+    threshold: 10
+    badge_id: rust-ten-merged-prs
+
+  - id: compiler-contributor
+    name: "Compiler Contributor"
+    description: "Had three compiler pull requests (labelled T-compiler) merged into rust-lang/rust."
+    type: merged_prs
+    enabled: true
+    repository: rust-lang/rust
+    labels: [T-compiler]
+    exclude_labels: [rollup]
+    threshold: 3
+    badge_id: rust-compiler-contributor

@@ -20,8 +20,7 @@ import (
 
 func main() {
 	_ = godotenv.Load()
-	dsn := "host=" + os.Getenv("DB_HOST") + " user=" + os.Getenv("DB_USER") + " password=" + os.Getenv("DB_PASSWORD") + " dbname=" + os.Getenv("DB_NAME") + " port=" + os.Getenv("DB_PORT") + " sslmode=disable"
-	conn, err := db.Connect(dsn)
+	conn, err := db.Connect(db.DSNFromEnv())
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}

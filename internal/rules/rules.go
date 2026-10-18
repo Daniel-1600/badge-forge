@@ -5,6 +5,8 @@ type EventType int
 const (
 	BadgeCreated EventType = iota
 	AssertionCreated
+	// PullRequestMerged means a person has (new) merged pull requests to count.
+	PullRequestMerged
 )
 
 type Event struct {

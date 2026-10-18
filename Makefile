@@ -1,4 +1,4 @@
-.phony: lint format server build db-start check deps db-shell docker-build docker-run db-create db-seed db-seed-rust test test-verbose test-one
+.phony: lint format server build db-start check deps db-shell docker-build docker-run db-create db-seed db-seed-rust award-prs test test-verbose test-one
 
 include .env
 export
@@ -54,6 +54,10 @@ db-seed:
 #wipe tahrir_go and reload it from rust-lang/team and rust-lang/rust PRs
 db-seed-rust:
 	python3 -I scripts/seed_rust.py
+
+#award the merged_prs badges in config/rules.yaml from the github_* tables
+award-prs:
+	go run ./cmd/award-prs
 
 #check all code quality checks
 checks: format lint

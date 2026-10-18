@@ -21,6 +21,10 @@ type RuleConfig struct {
 	Metric      string `yaml:"metric"`
 	Threshold   int    `yaml:"threshold"`
 	BadgeID     string `yaml:"badge_id"`
+	// merged_prs only
+	Repository    string   `yaml:"repository"`
+	Labels        []string `yaml:"labels"`
+	ExcludeLabels []string `yaml:"exclude_labels"`
 }
 
 // LoadRules reads rule definitions from a YAML file and creates the
@@ -55,6 +59,24 @@ func LoadRules(path string, db *gorm.DB) ([]Rule, error) {
 				Threshold: definition.Threshold,
 				BadgeID:   definition.BadgeID,
 				DB:        db,
+			})
+		case "merged_prs":
+			if definition.Threshold <= 0 {
+				return nil, fmt.Errorf("rule %q (index %d): threshold must be greater than zero", definition.Name, i)
+			}
+			if definition.BadgeID == "" {
+				return nil, fmt.Errorf("rule %q (index %d): badge_id is required", definition.Name, i)
+			}
+
+			loaded = append(loaded, &MergedPRsRule{
+				Threshold:     definition.Threshold,
+				BadgeID:       definition.BadgeID,
+				Repository:    definition.Repository,
+				Labels:        definition.Labels,
+				ExcludeLabels: definition.ExcludeLabels,
+				Name:          definition.Name,
+				Description:   definition.Description,
+				DB:            db,
 			})
 		default:
 			return nil, fmt.Errorf("rule %q (index %d): unknown type %q", definition.Name, i, definition.Type)
