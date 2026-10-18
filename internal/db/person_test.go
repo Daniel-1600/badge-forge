@@ -50,3 +50,23 @@ func TestGetPersons(t *testing.T) {
 	require.Contains(t, nicknames, "bob-test")
 
 }
+
+func TestFindOrCreatePersonByNickname(t *testing.T) {
+	db := setupTestDB(t)
+
+	created, isNew, err := FindOrCreatePersonByNickname(db, "ferris", "")
+	require.NoError(t, err)
+	require.True(t, isNew)
+	require.Equal(t, "ferris", created.Nickname)
+	require.Equal(t, "ferris@users.noreply.github.com", created.Email)
+
+	again, isNew, err := FindOrCreatePersonByNickname(db, "ferris", "other@example.com")
+	require.NoError(t, err)
+	require.False(t, isNew)
+	require.Equal(t, created.ID, again.ID)
+	require.Equal(t, "ferris@users.noreply.github.com", again.Email, "existing person is not modified")
+
+	var count int64
+	db.Table("persons").Where("nickname = ?", "ferris").Count(&count)
+	require.Equal(t, int64(1), count)
+}
