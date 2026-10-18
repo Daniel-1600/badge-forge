@@ -1,4 +1,4 @@
-.phony: lint format server build db-start check deps db-shell docker-build docker-run db-create test test-verbose test-one
+.phony: lint format server build db-start check deps db-shell docker-build docker-run db-create db-seed db-seed-rust test test-verbose test-one
 
 include .env
 export
@@ -46,6 +46,14 @@ db-create:
 #start the database container
 db-start:
 	podman start tahrir-pg
+
+#wipe tahrir_go and reload it from the tahrir reference db
+db-seed:
+	./scripts/seed_db.sh
+
+#wipe tahrir_go and reload it from rust-lang/team and rust-lang/rust PRs
+db-seed-rust:
+	python3 -I scripts/seed_rust.py
 
 #check all code quality checks
 checks: format lint
